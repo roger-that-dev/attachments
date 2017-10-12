@@ -25,8 +25,6 @@ class ProposeFlow(private val agreementTxt: String,
         val agreeCmd = AgreementContract.Commands.Agree()
         val agreeCmdRequiredSigners = listOf(ourIdentity.owningKey, counterparty.owningKey)
 
-        val attachment = serviceHub.attachments.openAttachment(untrustedPartiesAttachment)
-
         val txBuilder = TransactionBuilder(notary)
                 .addOutputState(agreementState, AGREEMENT_CONTRACT_ID)
                 .addCommand(agreeCmd, agreeCmdRequiredSigners)

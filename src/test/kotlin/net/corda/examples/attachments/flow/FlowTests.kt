@@ -1,10 +1,11 @@
 package net.corda.examples.attachments.flow
 
-import net.corda.core.crypto.SecureHash.Companion.zeroHash
+import net.corda.core.crypto.SecureHash
 import net.corda.core.identity.Party
 import net.corda.core.node.services.queryBy
 import net.corda.core.transactions.SignedTransaction
 import net.corda.core.utilities.getOrThrow
+import net.corda.examples.attachments.ATTACHMENT_JAR_PATH
 import net.corda.examples.attachments.state.AgreementState
 import net.corda.node.internal.StartedNode
 import net.corda.testing.node.MockNetwork
@@ -14,6 +15,7 @@ import net.corda.testing.unsetCordappPackages
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import java.io.File
 import kotlin.test.assertEquals
 
 class FlowTests {
@@ -23,8 +25,8 @@ class FlowTests {
     private lateinit var aIdentity: Party
     private lateinit var bIdentity: Party
     private lateinit var agreementTxt: String
-    // TODO: Make a proper hash.
-    private val untrustedPartiesAttachment = zeroHash
+    // TODO: Make this a proper attachment hash.
+    private lateinit var untrustedPartiesAttachment: SecureHash
 
     @Before
     fun setup() {
@@ -40,7 +42,15 @@ class FlowTests {
 
         agreementTxt = "${aIdentity.name} agrees with ${bIdentity.name} that..."
 
-        nodes.partyNodes.forEach { it.registerInitiatedFlow(AgreeFlow::class.java) }
+        // We upload a test attachment to the first node, who will propagate it to the other node as part of the flow.
+        // TODO: Modify this to be the real attachment.
+        val attachmentInputStream = File(ATTACHMENT_JAR_PATH).inputStream()
+        a.database.transaction {
+            // TODO: It's kind of wasteful to set the variable twice.
+            untrustedPartiesAttachment = a.attachments.importAttachment(attachmentInputStream)
+        }
+
+        b.registerInitiatedFlow(AgreeFlow::class.java)
 
         network.runNetwork()
     }
