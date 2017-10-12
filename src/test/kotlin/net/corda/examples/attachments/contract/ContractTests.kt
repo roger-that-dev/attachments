@@ -1,7 +1,9 @@
 package net.corda.examples.attachments.contract
 
-import net.corda.core.crypto.SecureHash.Companion.zeroHash
+import net.corda.core.crypto.generateKeyPair
+import net.corda.core.identity.CordaX500Name
 import net.corda.examples.attachments.ATTACHMENT_JAR_PATH
+import net.corda.examples.attachments.BLACKLISTED_PARTIES
 import net.corda.examples.attachments.contract.AgreementContract.Companion.AGREEMENT_CONTRACT_ID
 import net.corda.examples.attachments.state.AgreementState
 import net.corda.testing.*
@@ -12,6 +14,11 @@ import java.io.File
 
 class ContractTests {
     private val agreementTxt = "${MEGA_CORP.name} agrees with ${MINI_CORP.name} that..."
+    private val validAttachment = File(ATTACHMENT_JAR_PATH)
+    private val blacklistedPartyKeyPair = generateKeyPair()
+    private val blacklistedPartyPubKey = blacklistedPartyKeyPair.public
+    private val blacklistedPartyName = CordaX500Name(organisation = BLACKLISTED_PARTIES[0], locality = "London", country = "GB")
+    private val blacklistedParty = getTestPartyAndCertificate(blacklistedPartyName, blacklistedPartyPubKey).party
 
     @Before
     fun setup() {
@@ -27,7 +34,7 @@ class ContractTests {
     fun `agreement transaction contains one non-contract attachment`() {
         ledger {
             // We upload a test attachment to the ledger.
-            val attachmentInputStream = File(ATTACHMENT_JAR_PATH).inputStream()
+            val attachmentInputStream = validAttachment.inputStream()
             val attachmentHash = attachment(attachmentInputStream)
 
             transaction {
@@ -36,6 +43,22 @@ class ContractTests {
                 fails()
                 attachment(attachmentHash)
                 verifies()
+            }
+        }
+    }
+
+    @Test
+    fun `the non-contract attachment must not blacklist any of the participants`() {
+        ledger {
+            // We upload a test attachment to the ledger.
+            val attachmentInputStream = validAttachment.inputStream()
+            val attachmentHash = attachment(attachmentInputStream)
+
+            transaction {
+                output(AGREEMENT_CONTRACT_ID) { AgreementState(MEGA_CORP, blacklistedParty, agreementTxt) }
+                command(MEGA_CORP_PUBKEY, blacklistedPartyPubKey) { AgreementContract.Commands.Agree() }
+                attachment(attachmentHash)
+                fails()
             }
         }
     }
