@@ -39,17 +39,17 @@ class AgreementApi(private val rpcOps: CordaRPCOps) {
 
         if (counterpartyName == null) return Response
                 .status(BAD_REQUEST)
-                .entity("Query parameter 'counterparty' missing or has wrong format.\n")
+                .entity("Query parameter 'counterparty' missing or has wrong format.")
                 .build()
 
         val counterparty = rpcOps.wellKnownPartyFromX500Name(counterpartyName) ?: return Response
                 .status(BAD_REQUEST)
-                .entity("Party $counterpartyName cannot be found on the network.\n")
+                .entity("Party $counterpartyName cannot be found on the network.")
                 .build()
 
         return try {
             rpcOps.startFlow(::ProposeFlow, agreementTxt, BLACKLIST_JAR_HASH, counterparty).returnValue.getOrThrow()
-            Response.status(CREATED).entity("Agreement reached.\n").build()
+            Response.status(CREATED).entity("Agreement reached.").build()
 
         } catch (ex: AttachmentResolutionException) {
             // TODO: Explain how to upload the blacklist in the error message.

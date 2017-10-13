@@ -7,7 +7,6 @@ import net.corda.core.contracts.requireThat
 import net.corda.core.crypto.SecureHash
 import net.corda.core.transactions.LedgerTransaction
 import net.corda.examples.attachments.state.AgreementState
-import kotlin.streams.toList
 
 
 open class AgreementContract : Contract {
@@ -45,12 +44,13 @@ open class AgreementContract : Contract {
                 (attachmentJar.nextEntry.name == "blacklist.txt")
 
         // Constraints on the blacklisted parties.
-        val blacklistedCompanies = attachmentJar.bufferedReader().lines().toList()
+        val blacklistedCompanies = attachmentJar.bufferedReader().readLines()
         val agreement = tx.outputsOfType<AgreementState>().single()
         val participants = agreement.participants
         val participantsOrgs = participants.map { it.name.organisation }
-        "The agreement should not involve any blacklisted parties" using
-                (blacklistedCompanies.toSet().intersect(participantsOrgs).isEmpty())
+        val overlap = blacklistedCompanies.toSet().intersect(participantsOrgs)
+        "The agreement involved blacklisted parties: $overlap" using
+                (overlap.isEmpty())
 
         // Constraints on the signers.
         val command = tx.commands.single()

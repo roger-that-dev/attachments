@@ -25,13 +25,16 @@ fun main(args: Array<String>) {
     val user = User("user1", "test", permissions = setOf())
     driver(startNodesInProcess = true,
             isDebug = true) {
-        val (_, nodeA, nodeB) = listOf(
+
+        val (_, nodeA, nodeB, nodeC) = listOf(
                 startNode(providedName = CordaX500Name("Controller", "London", "GB"), advertisedServices = setOf(ServiceInfo(ValidatingNotaryService.type))),
-                startNode(providedName = CordaX500Name("PartyA", "London", "GB"), rpcUsers = listOf(user)),
-                startNode(providedName = CordaX500Name("PartyB", "New York", "US"), rpcUsers = listOf(user))).map { it.getOrThrow() }
+                startNode(providedName = CordaX500Name("Monogram Bank", "London", "GB"), rpcUsers = listOf(user)),
+                startNode(providedName = CordaX500Name("Hiseville Deposit Bank", "Sao Paulo", "BR"), rpcUsers = listOf(user)),
+                startNode(providedName = CordaX500Name("George State Bank", "New York", "US"), rpcUsers = listOf(user))).map { it.getOrThrow() }
 
         startWebserver(nodeA)
         startWebserver(nodeB)
+        startWebserver(nodeC)
 
         waitForAllNodesToFinish()
     }

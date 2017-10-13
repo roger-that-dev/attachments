@@ -22,12 +22,14 @@ private class UploadBlacklistClient {
     fun main(args: Array<String>) {
         require(args.size == 1) { "Usage: uploadBlacklist <node address>" }
         val nodeAddress = parse(args[0])
-        val client = CordaRPCClient(nodeAddress)
-        val proxy = client.start("user1", "test").proxy
+        val rpcConnection = CordaRPCClient(nodeAddress).start("user1", "test")
+        val proxy = rpcConnection.proxy
 
         val attachmentInputStream = File(BLACKLIST_JAR_PATH).inputStream()
         proxy.uploadAttachment(attachmentInputStream)
 
         logger.info("Blacklist uploaded to node via $nodeAddress.")
+
+        rpcConnection.notifyServerAndClose()
     }
 }
