@@ -4,8 +4,8 @@ import net.corda.core.contracts.Contract
 import net.corda.core.contracts.ContractAttachment
 import net.corda.core.contracts.TypeOnlyCommandData
 import net.corda.core.contracts.requireThat
+import net.corda.core.crypto.SecureHash
 import net.corda.core.transactions.LedgerTransaction
-import net.corda.examples.attachments.BLACKLIST_JAR_HASH
 import net.corda.examples.attachments.state.AgreementState
 import kotlin.streams.toList
 
@@ -13,6 +13,7 @@ import kotlin.streams.toList
 open class AgreementContract : Contract {
     companion object {
         val AGREEMENT_CONTRACT_ID = "net.corda.examples.attachments.contract.AgreementContract"
+        val BLACKLIST_JAR_HASH = SecureHash.parse("709FF97D2CAE131B0B8503DF49B897412DE736AAB9519D3D0BDC473559960B70")
     }
 
     override fun verify(tx: LedgerTransaction) = requireThat {
@@ -37,8 +38,7 @@ open class AgreementContract : Contract {
         // TODO: Switch to constraint on the jar's signer.
         // In the future, Corda will support the signing of jars. We will then be able to restrict
         // the attachments used to just those signed by party X.
-        "The jar's hash should be correct" using
-                (attachment.id.toString() == BLACKLIST_JAR_HASH)
+        "The jar's hash should be correct" using (attachment.id == BLACKLIST_JAR_HASH)
 
         val attachmentJar = attachment.openAsJAR()
         "The attachment jar's first entry should be entitled blacklist.txt" using

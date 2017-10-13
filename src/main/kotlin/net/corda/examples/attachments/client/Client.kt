@@ -1,4 +1,4 @@
-package net.corda.examples.attachments
+package net.corda.examples.attachments.client
 
 import net.corda.client.rpc.CordaRPCClient
 import net.corda.core.contracts.StateAndRef

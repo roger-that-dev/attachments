@@ -1,11 +1,11 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Run Contract Tests" type="JUnit" factoryName="JUnit">
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-    <module name="cordapp-template_test" />
+    <module name="attachments_test" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" />
-    <option name="PACKAGE_NAME" value="com.template.contract" />
-    <option name="MAIN_CLASS_NAME" value="com.template.contract.ContractTests" />
+    <option name="PACKAGE_NAME" value="net.corda.examples.attachments.contract" />
+    <option name="MAIN_CLASS_NAME" value="net.corda.examples.attachments.contract.ContractTests" />
     <option name="METHOD_NAME" value="" />
     <option name="TEST_OBJECT" value="class" />
     <option name="VM_PARAMETERS" value="-ea -javaagent:lib/quasar.jar" />
