@@ -54,6 +54,7 @@ class AgreementApi(private val rpcOps: CordaRPCOps) {
             Response.status(BAD_REQUEST).entity(msg).build()
 
         } catch (ex: Throwable) {
+            // Maybe we can use a nicer error message here. We get: Contract verification failed: Failed requirement: The agreement involved blacklisted parties: [George State Bank], contract: net.corda.examples.attachments.contract.AgreementContract@46d922ab, transaction: FAACE7B345664FC1AD3E93F6A1E1B7B7635431C3450B108DA51D1BA146511EAC
             Response.status(BAD_REQUEST).entity(ex.message).build()
         }
     }
