@@ -55,7 +55,7 @@ class FlowTests {
             blacklistAttachment = a.attachments.importAttachment(attachmentInputStream)
         }
 
-        // We upload the valid attachment to the first node, who will propagate it to the other node as part of the
+        // We upload the invalid attachment to the first node, who will propagate it to the other node as part of the
         // flow.
         val incorrectAttachmentInputStream = File(INCORRECT_JAR_PATH).inputStream()
         a.database.transaction {
