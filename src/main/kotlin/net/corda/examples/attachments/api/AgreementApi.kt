@@ -33,7 +33,11 @@ class AgreementApi(private val rpcOps: CordaRPCOps) {
     fun proposeAgreement(
             @QueryParam("counterparty") counterpartyName: CordaX500Name?,
             @QueryParam("agreement") agreementTxt: String): Response {
-
+        
+        // Could we just pass in a string instead of a whole X500 name and use the below instead?
+        //        val lenderIdentity = services.partiesFromName(counterparty, exactMatch = false).singleOrNull()
+        //        ?: throw IllegalStateException("Couldn't lookup node identity for $counterparty.")
+        // then catch the exception and return an error response.
         if (counterpartyName == null) return Response
                 .status(BAD_REQUEST)
                 .entity("Query parameter 'counterparty' missing or has wrong format.")
