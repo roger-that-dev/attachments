@@ -1,41 +1,33 @@
 package net.corda.examples.attachments.client
 
 import net.corda.client.rpc.CordaRPCClient
-import net.corda.core.contracts.StateAndRef
 import net.corda.core.utilities.NetworkHostAndPort.Companion.parse
 import net.corda.core.utilities.loggerFor
-import net.corda.examples.attachments.state.AgreementState
+import net.corda.examples.attachments.BLACKLIST_JAR_PATH
 import org.slf4j.Logger
+import java.io.File
 
 /**
- * Demonstration of how to use the CordaRPCClient to connect to a Corda Node and
- * stream the contents of the node's vault.
+ * Uploads the jar of blacklisted counterparties with whom agreements cannot be struck to the node.
  */
 fun main(args: Array<String>) {
-    TemplateClient().main(args)
+    UploadBlacklistClient().main(args)
 }
 
-private class TemplateClient {
+private class UploadBlacklistClient {
     companion object {
-        val logger: Logger = loggerFor<TemplateClient>()
-        private fun logState(state: StateAndRef<AgreementState>) = logger.info("{}", state.state.data)
+        val logger: Logger = loggerFor<UploadBlacklistClient>()
     }
 
     fun main(args: Array<String>) {
-        require(args.size == 1) { "Usage: TemplateClient <node address>" }
+        require(args.size == 1) { "Usage: uploadBlacklist <node address>" }
         val nodeAddress = parse(args[0])
         val client = CordaRPCClient(nodeAddress)
-
-        // Can be amended in the com.template.MainKt file.
         val proxy = client.start("user1", "test").proxy
 
-        // Grab all existing TemplateStates and all future TemplateStates.
-        val (snapshot, updates) = proxy.vaultTrack(AgreementState::class.java)
+        val attachmentInputStream = File(BLACKLIST_JAR_PATH).inputStream()
+        proxy.uploadAttachment(attachmentInputStream)
 
-        // Log the existing TemplateStates and listen for new ones.
-        snapshot.states.forEach { logState(it) }
-        updates.toBlocking().subscribe { update ->
-            update.produced.forEach { logState(it) }
-        }
+        logger.info("Blacklist uploaded to node via $nodeAddress.")
     }
 }
