@@ -1,4 +1,4 @@
-package net.corda.examples.attachments
+package net.corda.examples.attachments.tests
 
 // These blacklisted parties are named in the file blacklisted.txt file in blacklist.jar.
 val BLACKLISTED_PARTIES = listOf(

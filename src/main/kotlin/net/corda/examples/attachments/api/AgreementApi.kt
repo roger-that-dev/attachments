@@ -22,9 +22,6 @@ import javax.ws.rs.core.Response.Status.CREATED
 // This API is accessible from /api/agreement. All paths specified below are relative to it.
 @Path("a")
 class AgreementApi(private val rpcOps: CordaRPCOps) {
-    companion object {
-        private val logger = loggerFor<AgreementApi>()
-    }
 
     @GET
     @Path("agreements")

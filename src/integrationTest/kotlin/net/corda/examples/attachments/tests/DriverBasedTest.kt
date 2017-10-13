@@ -1,4 +1,4 @@
-package net.corda.examples.attachments
+package net.corda.examples.attachments.tests
 
 import net.corda.core.utilities.getOrThrow
 import net.corda.node.services.transactions.SimpleNotaryService

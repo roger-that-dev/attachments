@@ -24,7 +24,7 @@ open class AgreementContract : Contract {
         "The transaction should have no other outputs" using
                 (tx.outputs.size == 1)
         "The transaction should have an Agree command" using
-                (tx.commandsOfType<AgreementContract.Commands.Agree>().size == 1)
+                (tx.commandsOfType<Commands.Agree>().size == 1)
         "The transaction should have no other commands" using
                 (tx.commands.size == 1)
 

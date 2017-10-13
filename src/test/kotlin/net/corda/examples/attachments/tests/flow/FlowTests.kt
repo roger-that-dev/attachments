@@ -1,4 +1,4 @@
-package net.corda.examples.attachments.flow
+package net.corda.examples.attachments.tests.flow
 
 import net.corda.core.contracts.TransactionVerificationException
 import net.corda.core.crypto.SecureHash
@@ -6,8 +6,10 @@ import net.corda.core.identity.Party
 import net.corda.core.node.services.queryBy
 import net.corda.core.transactions.SignedTransaction
 import net.corda.core.utilities.getOrThrow
+import net.corda.examples.attachments.flow.AgreeFlow
+import net.corda.examples.attachments.flow.ProposeFlow
 import net.corda.examples.attachments.BLACKLIST_JAR_PATH
-import net.corda.examples.attachments.INCORRECT_JAR_PATH
+import net.corda.examples.attachments.tests.INCORRECT_JAR_PATH
 import net.corda.examples.attachments.state.AgreementState
 import net.corda.node.internal.StartedNode
 import net.corda.testing.node.MockNetwork

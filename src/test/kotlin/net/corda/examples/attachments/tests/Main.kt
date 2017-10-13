@@ -1,4 +1,4 @@
-package net.corda.examples.attachments
+package net.corda.examples.attachments.tests
 
 import net.corda.core.identity.CordaX500Name
 import net.corda.core.utilities.getOrThrow
@@ -24,6 +24,7 @@ fun main(args: Array<String>) {
     // No permissions required as we are not invoking flows.
     val user = User("user1", "test", permissions = setOf())
     driver(startNodesInProcess = true,
+            extraCordappPackagesToScan = listOf("net.corda.examples.attachments"),
             isDebug = true) {
 
         val (_, nodeA, nodeB, nodeC) = listOf(

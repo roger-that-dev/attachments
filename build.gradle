@@ -132,5 +132,5 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
 task uploadBlacklist(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = 'net.corda.examples.attachments.client.ClientKt'
-    args 'localhost:10006'
+    args 'localhost:10006', 'localhost:10009', 'localhost:10012'
 }

@@ -1,8 +1,9 @@
-package net.corda.examples.attachments.contract
+package net.corda.examples.attachments.tests.contract
 
 import net.corda.core.crypto.generateKeyPair
 import net.corda.core.identity.CordaX500Name
-import net.corda.examples.attachments.BLACKLISTED_PARTIES
+import net.corda.examples.attachments.contract.AgreementContract
+import net.corda.examples.attachments.tests.BLACKLISTED_PARTIES
 import net.corda.examples.attachments.BLACKLIST_JAR_PATH
 import net.corda.examples.attachments.contract.AgreementContract.Companion.AGREEMENT_CONTRACT_ID
 import net.corda.examples.attachments.state.AgreementState
