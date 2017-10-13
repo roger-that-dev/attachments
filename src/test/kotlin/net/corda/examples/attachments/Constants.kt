@@ -9,3 +9,5 @@ val BLACKLISTED_PARTIES = listOf(
         "The James Polk Stone Community Bank",
         "Tifton Banking Company"
 )
+// This jar exists, but does not meet the constraints imposed by AttachmentContract.
+const val INCORRECT_JAR_PATH = "src/test/resources/invalid.jar"
