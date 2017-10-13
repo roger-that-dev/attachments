@@ -17,6 +17,7 @@ import org.junit.Before
 import org.junit.Test
 import java.io.File
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 class FlowTests {
     private lateinit var network: MockNetwork
@@ -25,8 +26,7 @@ class FlowTests {
     private lateinit var aIdentity: Party
     private lateinit var bIdentity: Party
     private lateinit var agreementTxt: String
-    // TODO: Make this a proper attachment hash.
-    private lateinit var untrustedPartiesAttachment: SecureHash
+    private lateinit var blacklistAttachment: SecureHash
 
     @Before
     fun setup() {
@@ -42,12 +42,10 @@ class FlowTests {
 
         agreementTxt = "${aIdentity.name} agrees with ${bIdentity.name} that..."
 
-        // We upload a test attachment to the first node, who will propagate it to the other node as part of the flow.
-        // TODO: Modify this to be the real attachment.
+        // We upload the attachment to the first node, who will propagate it to the other node as part of the flow.
         val attachmentInputStream = File(BLACKLIST_JAR_PATH).inputStream()
         a.database.transaction {
-            // TODO: It's kind of wasteful to set the variable twice.
-            untrustedPartiesAttachment = a.attachments.importAttachment(attachmentInputStream)
+            blacklistAttachment = a.attachments.importAttachment(attachmentInputStream)
         }
 
         b.registerInitiatedFlow(AgreeFlow::class.java)
@@ -62,25 +60,33 @@ class FlowTests {
     }
 
     @Test
-    fun `flow records a transaction in both parties' transaction storages with no inputs and the agreement as output`() {
+    fun `flow records the correct transaction in both parties' transaction storages`() {
         val signedTx = reachAgreement()
 
         // We check the recorded transaction in both transaction storages.
         listOf(a, b).forEach { node ->
-            val recordedTx = node.services.validatedTransactions.getTransaction(signedTx.id)!!
+            val recordedTx = node.services.validatedTransactions.getTransaction(signedTx.id)
+            assertNotNull(recordedTx)
 
+            // Checks on the signatures.
+            recordedTx!!.verifyRequiredSignatures()
+
+            // Checks on the inputs.
             assertEquals(0, recordedTx.inputs.size)
 
+            // Checks on the outputs.
             val outputs = recordedTx.tx.outputs
             assertEquals(1, outputs.size)
-
-            val attachments = recordedTx.tx.attachments
-            assertEquals(1, attachments.size)
-
             val recordedState = outputs.single().data as AgreementState
+
             assertEquals(aIdentity, recordedState.partyA)
             assertEquals(bIdentity, recordedState.partyB)
             assertEquals(agreementTxt, recordedState.txt)
+
+            // Checks on the attachments.
+            val attachments = recordedTx.tx.attachments
+            assertEquals(1, attachments.size)
+            assertEquals(blacklistAttachment, attachments.single())
         }
     }
 
@@ -102,9 +108,22 @@ class FlowTests {
         }
     }
 
+    @Test
+    fun `flow records the correct attachment in both parties' attachment storages`() {
+        reachAgreement()
+
+        // We check the recorded agreement in both attachment storages.
+        listOf(a, b).forEach { node ->
+            node.database.transaction {
+                val blacklist = node.services.attachments.openAttachment(blacklistAttachment)
+                assertNotNull(blacklist)
+            }
+        }
+    }
+
     // Uses the propose flow to record an agreement on the ledger.
     private fun reachAgreement(): SignedTransaction {
-        val flow = ProposeFlow(agreementTxt, untrustedPartiesAttachment, bIdentity)
+        val flow = ProposeFlow(agreementTxt, blacklistAttachment, bIdentity)
         val future = a.services.startFlow(flow).resultFuture
         network.runNetwork()
         return future.getOrThrow()
