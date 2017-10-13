@@ -5,7 +5,7 @@ import net.corda.core.identity.Party
 import net.corda.core.node.services.queryBy
 import net.corda.core.transactions.SignedTransaction
 import net.corda.core.utilities.getOrThrow
-import net.corda.examples.attachments.ATTACHMENT_JAR_PATH
+import net.corda.examples.attachments.BLACKLIST_JAR_PATH
 import net.corda.examples.attachments.state.AgreementState
 import net.corda.node.internal.StartedNode
 import net.corda.testing.node.MockNetwork
@@ -44,7 +44,7 @@ class FlowTests {
 
         // We upload a test attachment to the first node, who will propagate it to the other node as part of the flow.
         // TODO: Modify this to be the real attachment.
-        val attachmentInputStream = File(ATTACHMENT_JAR_PATH).inputStream()
+        val attachmentInputStream = File(BLACKLIST_JAR_PATH).inputStream()
         a.database.transaction {
             // TODO: It's kind of wasteful to set the variable twice.
             untrustedPartiesAttachment = a.attachments.importAttachment(attachmentInputStream)

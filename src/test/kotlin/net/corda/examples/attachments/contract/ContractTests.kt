@@ -2,8 +2,8 @@ package net.corda.examples.attachments.contract
 
 import net.corda.core.crypto.generateKeyPair
 import net.corda.core.identity.CordaX500Name
-import net.corda.examples.attachments.ATTACHMENT_JAR_PATH
 import net.corda.examples.attachments.BLACKLISTED_PARTIES
+import net.corda.examples.attachments.BLACKLIST_JAR_PATH
 import net.corda.examples.attachments.contract.AgreementContract.Companion.AGREEMENT_CONTRACT_ID
 import net.corda.examples.attachments.state.AgreementState
 import net.corda.testing.*
@@ -14,7 +14,7 @@ import java.io.File
 
 class ContractTests {
     private val agreementTxt = "${MEGA_CORP.name} agrees with ${MINI_CORP.name} that..."
-    private val validAttachment = File(ATTACHMENT_JAR_PATH)
+    private val validAttachment = File(BLACKLIST_JAR_PATH)
     private val blacklistedPartyKeyPair = generateKeyPair()
     private val blacklistedPartyPubKey = blacklistedPartyKeyPair.public
     private val blacklistedPartyName = CordaX500Name(organisation = BLACKLISTED_PARTIES[0], locality = "London", country = "GB")
@@ -36,6 +36,7 @@ class ContractTests {
             // We upload a test attachment to the ledger.
             val attachmentInputStream = validAttachment.inputStream()
             val attachmentHash = attachment(attachmentInputStream)
+            println(attachmentHash)
 
             transaction {
                 output(AGREEMENT_CONTRACT_ID) { AgreementState(MEGA_CORP, MINI_CORP, agreementTxt) }
